@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import UserContext from "../../UserContext";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -12,22 +13,27 @@ function CardProduct({
   price,
   body,
   setBody,
-  idProduct,
+  _id,
   idUser,
   atualizar,
   setAtualizar,
   selected,
+  config,
 }) {
   const [checked, setChecked] = useState("false");
   const [buttDelete, setButtDelete] = useState(false);
 
   function addBody() {
-    setBody([...body, idProduct]);
+    setBody([...body, _id]);
 
-    const promise = axios.put("http://localhost:5000/cartShopping/true", {
-      idProduct,
-      selected: "true",
-    });
+    const promise = axios.put(
+      "http://localhost:5000/cartShopping/true",
+      {
+        _id,
+        selected: "true",
+      },
+      config
+    );
     promise
       .then(() => {
         setChecked("true");
@@ -39,10 +45,14 @@ function CardProduct({
   }
 
   function deleteBody() {
-    const promise = axios.put("http://localhost:5000/cartShopping/false", {
-      idProduct,
-      selected: "false",
-    });
+    const promise = axios.put(
+      "http://localhost:5000/cartShopping/false",
+      {
+        _id,
+        selected: "false",
+      },
+      config
+    );
     promise
       .then(() => {
         setChecked("false");
@@ -52,11 +62,11 @@ function CardProduct({
         alert("erro");
       });
 
-    setBody(body.filter((valor) => valor !== idProduct));
+    setBody(body.filter((valor) => valor !== _id));
   }
 
   function deleteProduct() {
-    const promisse = axios.delete("/cartShopping", { idProduct, idUser });
+    const promisse = axios.delete("/cartShopping", { _id, idUser }, config);
     promisse
       .then(() => {
         setButtDelete(!buttDelete);
@@ -101,13 +111,20 @@ function CardProduct({
 }
 
 export default function CartShopping() {
+  const { token } = useContext(UserContext);
   const navigate = useNavigate();
   const [body, setBody] = useState([]);
   const [products, setProducts] = useState([]);
-  const [atualizar, setAtualizar] = useState([]);
+  const [atualizar, setAtualizar] = useState(false);
+
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
-    const promisse = axios.get(`http://localhost:5000/cartShopping`);
+    const promisse = axios.get(
+      `http://localhost:5000/cartShopping`,
+      {},
+      config
+    );
     promisse
       .then((resposta) => {
         setProducts(resposta.data);
@@ -120,7 +137,11 @@ export default function CartShopping() {
   console.log("oooooooo", body);
 
   function purchase() {
-    const promisse = axios.post("/http://localhost:5000/checkout", body);
+    const promisse = axios.post(
+      "/http://localhost:5000/checkout",
+      body,
+      config
+    );
     promisse
       .then(() => {
         navigate("/checkout");
@@ -151,10 +172,11 @@ export default function CartShopping() {
               body={body}
               selected={selected}
               setBody={setBody}
-              idProduct={_id}
+              _id={_id}
               idUser={idUser}
               atualizar={atualizar}
               setAtualizar={setAtualizar}
+              config={config}
             />
           ))}
           <Footer>
