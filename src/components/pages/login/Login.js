@@ -4,6 +4,7 @@ import { AuthBackground, Logo, Form, Button, ButtonText, SignUpLink } from '../.
 import { postLogin } from '../../../services/authServices.js';
 import { IoKey, IoMailSharp } from 'react-icons/io5';
 import styled from 'styled-components';
+import { TailSpin } from 'react-loader-spinner';
 
 const FormContainer = styled.div`
     position: relative;
@@ -14,6 +15,7 @@ export default function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
     const userBuild = {};
 
     const handleChangeEmail = event => {
@@ -24,18 +26,34 @@ export default function Login() {
     }
 
     function handleClickLogin() {
+        setLoading(true);
         userBuild.email = email;
         userBuild.password = password;
         console.log("userBuild: ", userBuild);
 
         postLogin(userBuild).then((res) => {
             console.log("data:", res.data);
-            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("token", res.data);
             navigate('/home');
+            setLoading(false);
         }).catch((res) => {
+            setLoading(false);
             alert(res.message);
             console.log("errorData: ", res)
         })
+    }
+
+    if (loading) {
+        return (<AuthBackground>
+            <TailSpin
+                height="80"
+                width="80"
+                color="#25acbf"
+                ariaLabel="tail-spin-loading"
+                radius="1"
+                visible={true}
+            />
+          </AuthBackground>)
     }
 
     return (
