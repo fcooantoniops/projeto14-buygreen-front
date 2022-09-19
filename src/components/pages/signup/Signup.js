@@ -122,7 +122,6 @@ export default function Signup() {
                     fontSize: "1.2rem", 
                     color: "grey" }}/>
             </FormContainer>
-            
             <Button onClick={handleClickLogin}>
                 <ButtonText >Cadastrar</ButtonText>
             </Button>
