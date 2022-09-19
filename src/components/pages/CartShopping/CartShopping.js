@@ -8,7 +8,7 @@ import { AiOutlineDelete, AiFillDelete } from "react-icons/ai";
 
 function CardProduct({
   name,
-  img,
+  image,
   price,
   body,
   setBody,
@@ -24,10 +24,7 @@ function CardProduct({
   function addBody() {
     setBody([...body, idProduct]);
 
-    const promise = axios.put("http://localhost:5000/cartShopping", {
-      name,
-      price,
-      img,
+    const promise = axios.put("http://localhost:5000/cartShopping/true", {
       idProduct,
       selected: "true",
     });
@@ -42,10 +39,7 @@ function CardProduct({
   }
 
   function deleteBody() {
-    const promise = axios.put("http://localhost:5000/cartShopping", {
-      name,
-      price,
-      img,
+    const promise = axios.put("http://localhost:5000/cartShopping/false", {
       idProduct,
       selected: "false",
     });
@@ -80,16 +74,16 @@ function CardProduct({
         (selected === "false" || selected === undefined) ? (
           <BsCheckSquare
             onClick={addBody}
-            style={{ fontSize: 45, color: "white" }}
+            style={{ fontSize: 50, color: "white" }}
           />
         ) : (
           <BsCheckSquareFill
             onClick={deleteBody}
-            style={{ fontSize: 45, color: "white" }}
+            style={{ fontSize: 50, color: "white" }}
           />
         )}
 
-        <Img src={img} alt="planta" />
+        <Img src={image} alt="planta" />
         <CaixaInf>
           <Text>{name}</Text>
           <Text>{price}</Text>
@@ -149,11 +143,11 @@ export default function CartShopping() {
               <Titulo>Buy Green</Titulo>
             </Center>
           </Topo>
-          {products.map(({ name, price, img, _id, selected, idUser }) => (
+          {products.map(({ name, price, image, _id, selected, idUser }) => (
             <CardProduct
               name={name}
               price={price}
-              img={img}
+              image={image}
               body={body}
               selected={selected}
               setBody={setBody}
